@@ -8,9 +8,15 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import { useState } from 'react';
 
 import { json } from "./json";
+import { useRouter } from 'next/navigation';
+
+import { Toaster, toast } from "react-hot-toast";
+
+
 const axios = require("axios");
 
 const Navbar = () => {
+  const router = useRouter();
 
   const { user } = useUser();
 
@@ -23,8 +29,18 @@ const Navbar = () => {
     console.log(imageUrl);
   }
 
+  const goInvest = () => {
+    if (user) {
+      router.push('/invest');
+    } else {
+      console.log("skeg")
+      toast.error("Please log in to build your portfolio.");
+    }
+  }
+
   return (
     <nav className="p-6 w-full">
+      <Toaster />
       <div className="flex items-center justify-between">
         <div className="pl-4">
           <Link href="/">
@@ -35,14 +51,17 @@ const Navbar = () => {
         {/* Navigation Links */}
         <ul className="flex space-x-4">
           <li>
-            <Link href="/Companies" className="text-white hover:text-gray-300">
-              Companies
+            <Link href="/portfolio" className="text-white hover:text-gray-300">
+              Portfolio
             </Link>
           </li>
           <li>
-            <Link href="/About" className="text-white hover:text-gray-300">
-              About
-            </Link>
+            {/* <Link href="/invest" className="text-white hover:text-gray-300">
+              Invest
+            </Link> */}
+            <button onclick={goInvest} className="text-white hover:text-gray-300">
+              Invest
+            </button>
           </li>
           {!user ? (
             <li>
