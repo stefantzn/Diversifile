@@ -5,9 +5,8 @@ import Link from 'next/link';
 import { useUser } from '@auth0/nextjs-auth0/client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from "react";
-
-import { Toaster, toast } from "react-hot-toast";
+import { useEffect } from "react";
+import { toast } from 'react-hot-toast';
 
 
 const axios = require("axios");
@@ -17,27 +16,23 @@ export default function Home() {
 
   const router = useRouter();
   const { user, error, isLoading } = useUser();
-  const [doneSurvey, setDoneSurvey] = useState(false);
 
   useEffect(() => {
     console.log("This is the user: ", user)
     if (user) {
       axios.post(`http://localhost:5001/createUser`, { username: user.name, email: user.email })
       .then((res) => {
-        console.log(res.data);
-        setDoneSurvey(res.data.doneSurvey);
+        console.log(res);
       })
     }
   }, [user]);
 
-  const handleStart = (e) => {
+  const handleSurvey = (e) => {
     e.preventDefault(); // Prevent default link behavior
 
     // Check if user exists (isLoggedIn should be replaced with your actual check)
-    if (user && doneSurvey) {
+    if (user) {
       // User exists, proceed to navigate
-      router.push('/portfolio');
-    } else if (user && !doneSurvey) {
       router.push('/survey');
     } else {
       // User does not exist, show toast message
@@ -50,7 +45,6 @@ export default function Home() {
     
     
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
-      <Toaster />
 
     <link rel="icon" href="/favicon.ico" sizes="any" />
 
@@ -71,7 +65,7 @@ export default function Home() {
           </h3>
         )}
         {/* <Link href="/survey"> */}
-          <button onClick={handleStart}
+          <button onClick={handleSurvey}
                   className="relative inline-block bg-white text-black text-2xl font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white">
             <span className="relative z-10">Build your portfolio here</span>
             <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>

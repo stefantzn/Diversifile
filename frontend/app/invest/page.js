@@ -3,11 +3,13 @@
 import { useUser } from "@auth0/nextjs-auth0/client";
 import Navbar from "../../components/Navbar";
 import { useState } from "react";
+// import { set } from "@auth0/nextjs-auth0/dist/session";
 
 const axios = require("axios");
 
 const Page = () => {
   const [ticker, setTicker] = useState("");
+  const [tickerRes, setTickerRes] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [imageMessage, setImageMessage] = useState(null);
   const [latestOHLC, setLatestOHLC] = useState(null);
@@ -39,6 +41,7 @@ const Page = () => {
         username: user.name,
         email: user.email,
       });
+      setTickerRes(res2.data);
       setLatestOHLC(res2.data.lastOHLC);
       setPrediction(res2.data.prediction);
     } catch (error) {
@@ -115,6 +118,7 @@ const Page = () => {
                 <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
               </button>
               <div className="ml-4 flex flex-col space-y-1 text-xs">
+                {tickerRes && <div>Ticker: {tickerRes.ticker}</div>}
                 {latestOHLC && (
                   <>
                     <div>Open: {latestOHLC.open} | Close: {latestOHLC.close}</div>
