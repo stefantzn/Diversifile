@@ -32,7 +32,16 @@ const Navbar = () => {
   const goPortfolio = (e) => {
     e.preventDefault(); // Prevent default link behavior
     if (user) {
-      router.push('/portfolio');
+      axios.post(`http://localhost:5001/createUser`, { username: user.name, email: user.email })
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.doneSurvey) {
+          router.push('/portfolio');
+          return
+        } else {
+          toast.error("Please complete the survey to start building your portfolio.");
+        }
+      })
     } else {
       toast.error("Please log in to access your portfolio.");
     }
@@ -41,7 +50,16 @@ const Navbar = () => {
   const goInvest = (e) => {
     e.preventDefault(); // Prevent default link behavior
     if (user) {
-      router.push('/invest');
+      axios.post(`http://localhost:5001/createUser`, { username: user.name, email: user.email })
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.doneSurvey) {
+          router.push('/invest');
+          return
+        } else {
+          toast.error("Please complete the survey to invest.");
+        }
+      })
     } else {
       toast.error("Please log in to invest.");
     }
