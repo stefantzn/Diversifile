@@ -1,20 +1,37 @@
+'use client';
+
 import Navbar from "../components/Navbar";
 import Link from 'next/link';
+import { useUser } from '@auth0/nextjs-auth0/client';
+
 
 export default function Home() {
+
+  const { user, error, isLoading } = useUser();
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-2">
     
+    
+    <div className="flex min-h-screen flex-col items-center justify-center py-2">
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+
       <Navbar />
 
       <main className="flex flex-col items-center justify-center flex-1 px-20 text-center">
         <h1 className="text-8xl font-bold p-2">
           <span className="gradient-text animate-gradient">Diversifile</span>
         </h1>
+        
+        {user ? (
         <h3 className="text-xl font-bold text-white pb-20">
-          a simple way to <span className="gradient-text animate-gradient">diversify</span> your assets.
+          welcome back {user.name.toLowerCase()}!
         </h3>
-
+        ) : (
+          <h3 className="text-xl font-bold text-white pb-20">
+          a simple way to <span className="gradient-text animate-gradient">diversify</span> your assets.
+          </h3>
+        )}
         <Link href="/survey">
           <button className="relative inline-block bg-white text-black text-2xl font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white">
             <span className="relative z-10">Build your portfolio here</span>
@@ -22,6 +39,10 @@ export default function Home() {
           </button>
         </Link>
       </main>
+
+      <footer className="text-white text-xs py-4 w-full text-center">
+        <p>Made with ❤️ from Hack the 6ix</p>
+      </footer>
     </div>
   );
 }

@@ -1,21 +1,21 @@
+'use client';
+
 import Link from 'next/link';
+import Image from 'next/image'; 
+import logo from '../public/logo.png';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 
 import { json } from "./json";
 const axios = require("axios");
 
 const Navbar = () => {
-  const call = async () => {
-    const res = await axios.get(`http://localhost:5001/getSurveyData`);
-    console.log(res.data);
-  };
-
   return (
     <nav className="p-6 w-full">
       <div className="flex items-center justify-between">
-        <div className="text-white text-4xl font-bold pl-4">
-          <Link href="/" className="hover text-gray-300">
-            D
+        <div className="pl-4">
+          <Link href="/">
+            <Image src={logo} alt="Logo" width={40} height={40} /> 
           </Link>
         </div>
 
@@ -36,9 +36,6 @@ const Navbar = () => {
               Login
             </Link>
           </li>
-          <button onClick={call}>
-            Test
-          </button>
         </ul>
       </div>
     </nav>
