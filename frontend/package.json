@@ -16,7 +16,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
-    "survey-react-ui": "^1.11.9"
+    "survey-react-ui": "^1.11.9",
+    "toast": "^0.5.4"
   },
   "devDependencies": {
     "postcss": "^8",
