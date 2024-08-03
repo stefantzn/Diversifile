@@ -33,7 +33,7 @@ export const json = {
           {
             "type": "text",
             "name": "question3",
-            "title": "What is your anual salary?",
+            "title": "What is your annual salary?",
             "inputType": "number"
           },
           {
