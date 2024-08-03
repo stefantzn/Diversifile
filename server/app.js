@@ -70,6 +70,7 @@ app.post('/getTickerImage', (req, res) => {
     // console.log(req.body)
 
     const company = req.body.ticker;
+    console.log(company)
 
     // const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "run('Candlestick_Analysis.m'); exit;"`, (error, stdout, stderr) => {
     const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "Candlestick_Analysis_Polygon('${company}'); exit;"`, (error, stdout, stderr) => {
@@ -88,6 +89,7 @@ app.post('/getTickerImage', (req, res) => {
         const latestPatternMatch = stdout.match(/latestPattern\[(.+?)\]/); // Use .+? to match any character including spaces
         const patternTypeMatch = stdout.match(/patternType\[(\w+)\]/); // \w matches any word character (equivalent to [a-zA-Z0-9_])
         const successRateMatch = stdout.match(/successRate\[(\d+)%\]/); // Match digits followed by a %
+        const detectedTimeMatch = stdout.match(/detected_time\[(.+?)\]/); // Use .+? to match any character including spaces
 
         // Extracting the numeric values
         const open = openMatch ? parseFloat(openMatch[1]) : null;
@@ -98,10 +100,11 @@ app.post('/getTickerImage', (req, res) => {
         // Extracting the values
         const latestPattern = latestPatternMatch ? latestPatternMatch[1] : null;
         const patternType = patternTypeMatch ? patternTypeMatch[1] : null;
-        const successRate = successRateMatch ? parseInt(successRateMatch[1], 10) : null; // Parse the percentage as an integer
+        const successRate = successRateMatch ? successRateMatch[1] + "%" : null;
+        const detectedTime = detectedTimeMatch ? detectedTimeMatch[1] : null;
 
         console.log(`Open: ${open}, Close: ${close}, High: ${high}, Low: ${low}`);
-        console.log(`Latest Pattern: ${latestPattern}, Pattern Type: ${patternType}, Success Rate: ${successRate}`);
+        console.log(`Latest Pattern: ${latestPattern}, Pattern Type: ${patternType}, Success Rate: ${successRate}, Detected Time: ${detectedTime}`);
 
         const lastOHLC = {  open: open, 
                             close: close, 
@@ -110,7 +113,8 @@ app.post('/getTickerImage', (req, res) => {
 
         const prediction = { latestPattern: latestPattern,
                              patternType: patternType,
-                             successRate: successRate };
+                             successRate: successRate,
+                             detectedTime: detectedTime };
 
         db.collection('users')
             .updateOne(

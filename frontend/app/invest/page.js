@@ -21,15 +21,19 @@ const Page = () => {
   const searchTicker = async () => {
     setLoading(true);
     const ticketVal = ticker;
+    console.log("weoguwg")
 
     try {
+      console.log("tet")
       const res = await axios.post(
         `http://localhost:5001/getTickerImage`,
         { ticker: ticketVal, username: user.name, email: user.email },
         { responseType: "blob" }
       );
 
+      console.log(res.status);
       if (res.status === 204) {
+        console.log("No data available");
         setImageMessage(`No data available for "${ticketVal}"`);
         setImageUrl(null);
       } else {
@@ -127,7 +131,7 @@ const Page = () => {
                 )}
                 {prediction && (
                   <>
-                    <div>Latest Pattern: {prediction.latestPattern}</div>
+                    <div>Latest Pattern: {prediction.latestPattern} | Time: {prediction.detectedTime}</div>
                     <div>Pattern Type: {prediction.patternType} | Success Rate: {prediction.successRate}</div>
                   </>
                 )}

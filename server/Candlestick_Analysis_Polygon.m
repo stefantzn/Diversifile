@@ -1,7 +1,6 @@
 function script(ticker)
     % Define the parameters
     apiKey = '6nU0rFnIDQIpf5GexPLwMQ__KHLVdlX1';
-    ticker = 'PFE'; % Replace with your desired stock ticker
     multiplier = '1'; % Daily data
     timespan = 'day';
     endDate = datestr(datetime('today'), 'yyyy-mm-dd'); % Today's date
@@ -246,5 +245,6 @@ function script(ticker)
         title(['Candlestick Chart for ', symbol]);
         grid on;
         hold off;
+        saveas(gcf, 'plot.png');
     end
 end
