@@ -45,10 +45,12 @@ app.get('/getSurveyData', (req, res) => {
         });
 });
 
-app.get('/getTicker', (req, res) => {
+app.post('/getTicker', (req, res) => {
     console.log("Getting ticker");
 
-    const company = "BCG";
+    // console.log(req.body)
+
+    const company = req.body.ticker;
 
     // const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "run('Candlestick_Analysis.m'); exit;"`, (error, stdout, stderr) => {
     const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "Candlestick_Analysis_Polygon('${company}'); exit;"`, (error, stdout, stderr) => {
@@ -57,6 +59,15 @@ app.get('/getTicker', (req, res) => {
           return; // Removed res.status(500).send('Error running MATLAB script') to focus on the child process handling
         }
         console.log(`MATLAB stdout: ${stdout}`);
+
+        if (stdout.includes("No data available for the given date range")) {
+            // console.log("No data available for the given date range.");
+            // Handle the case when no data is available, e.g., send a specific response
+            res.status(204).send("No data available for the given date range.");
+            clearTimeout(killTimeout);
+            return; // Exit the callback to prevent further execution
+        }
+
         // console.error(`MATLAB stderr: ${stderr}`);
         // Assuming res.sendFile(outputImage) is part of a larger application logic not shown here
         res.sendFile(path.join(__dirname, 'plot.png'), (err) => {

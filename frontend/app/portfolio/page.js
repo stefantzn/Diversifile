@@ -1,18 +1,36 @@
 'use client'; // Ensure this file is treated as a Client Component
 
+// import { set } from "@auth0/nextjs-auth0/dist/session";
+import { useUser } from '@auth0/nextjs-auth0';
 import Navbar from "../../components/Navbar";
 import { useState } from 'react';
+
+const axios = require("axios");
 
 const Page = () => {
 
   const [ticker, setTicker] = useState("") 
 
-  const searchTicker = () => {
+  const [imageUrl, setImageUrl] = useState(null);
+  const [imageMessage, setImageMessage] = useState(null);
+
+  const searchTicker = async () => {
     // Handle the search logic here (e.g., send ticker to an API)
     console.log('Searching for ticker:', ticker);
+    const ticketVal = ticker;
 
     // Clear the input field
     setTicker('');
+
+    const res = await axios.post(`http://localhost:5001/getTicker`, { ticker: ticketVal }, { responseType: 'blob' });
+    if (res.status === 204) {
+      console.log('No data available for the given date range.');
+      setImageMessage(`No data available for "${ticketVal}"`);
+      setImageUrl(null);
+    } else {
+      setImageUrl(URL.createObjectURL(res.data));
+      setImageMessage(null);
+    }
   };
 
   return (
@@ -29,8 +47,8 @@ const Page = () => {
               placeholder="Search..."
               className="flex-1 p-2 rounded-l-md border border-gray-600 bg-gray-900 text-white focus:outline-none"
               value={ticker}
-              onChange={(e) => setTicker(e.target.value)}
-            />
+              onChange={(e) => setTicker(e.target.value.toUpperCase())}
+          />
             <button
               onClick={searchTicker}
               className="p-2 bg-blue-600 rounded-r-md border border-blue-700 hover:bg-blue-700 transition-colors"
@@ -45,6 +63,9 @@ const Page = () => {
           {/* Your main content goes here */}
         </main>
       </div>
+
+      {imageUrl && <img src={imageUrl} alt="Test" />}
+      {imageMessage && <div>{imageMessage}</div>}
     </div>
   );
 };
