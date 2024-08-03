@@ -18,7 +18,7 @@ const Navbar = () => {
 
   const call = async () => {
     console.log("Calling");
-    const res = await axios.get(`http://localhost:5001/getTicker`, { responseType: 'blob' });
+    const res = await axios.get(`http://localhost:5001/getTickerImage`, { responseType: 'blob' });
     setImageUrl(URL.createObjectURL(res.data));
     console.log(imageUrl);
   }

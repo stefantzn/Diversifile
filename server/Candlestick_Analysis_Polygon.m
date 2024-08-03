@@ -49,7 +49,7 @@ function script(ticker)
         latestPattern = '';
         lastPattern = '';
         lastPatternIndex = -1;
-        patternType = 'neutral';
+        patternType = 'Neutral';
         successRate = '';
 
         % Check for patterns for all days
@@ -58,12 +58,12 @@ function script(ticker)
                 if isThreeBlackCrows(openPrices(i-2:i), closePrices(i-2:i), highPrices(i-2:i), lowPrices(i-2:i))
                     lastPattern = 'Three Black Crows';
                     lastPatternIndex = i;
-                    patternType = 'bearish';
+                    patternType = 'Bearish';
                     successRate = '79%';
                 elseif isThreeWhiteSoldiers(openPrices(i-2:i), closePrices(i-2:i))
                     lastPattern = 'Three White Soldiers';
                     lastPatternIndex = i;
-                    patternType = 'bullish';
+                    patternType = 'Bullish';
                     successRate = '84%';
                 end
             end
@@ -71,11 +71,11 @@ function script(ticker)
                 if isEngulfing(openPrices(i-1:i), closePrices(i-1:i))
                     if closePrices(i) > openPrices(i)
                         lastPattern = 'Bullish Engulfing';
-                        patternType = 'bullish';
+                        patternType = 'Bullish';
                         successRate = '62%';
                     else
                         lastPattern = 'Bearish Engulfing';
-                        patternType = 'bearish';
+                        patternType = 'Bearish';
                         successRate = '82%';
                     end
                     lastPatternIndex = i;
@@ -84,12 +84,12 @@ function script(ticker)
             if isHammer(openPrices(i), closePrices(i), highPrices(i), lowPrices(i))
                 lastPattern = 'Hammer';
                 lastPatternIndex = i;
-                patternType = 'bullish'; % Assuming hammer is bullish
+                patternType = 'Bullish'; % Assuming hammer is bullish
                 successRate = '60%';
             elseif isInvertedHammer(openPrices, closePrices, highPrices, lowPrices, i)
                 lastPattern = 'Inverted Hammer';
                 lastPatternIndex = i;
-                patternType = 'bullish'; % Assuming inverted hammer is bullish
+                patternType = 'Bullish'; % Assuming inverted hammer is bullish
                 successRate = '67%';
             end
 
@@ -224,6 +224,9 @@ function script(ticker)
             % Add success rate to legend
             legendText = sprintf('%s\nSuccess Rate: %s', latestPattern, successRate);
             legend(legendText, 'Location', 'northwest');
+            disp(['latestPattern[', latestPattern,']']);
+            disp(['patternType[', patternType, ']']);
+            disp(['successRate[', successRate, ']']);
         end
         
         % Format the x-axis to reduce clutter

@@ -14,6 +14,7 @@ const Page = () => {
   const [imageUrl, setImageUrl] = useState(null);
   const [imageMessage, setImageMessage] = useState(null);
   const [latestOHLC, setLatestOHLC] = useState(null);
+  const [prediction, setPrediction] = useState(null);
 
   const { user, error, isLoading } = useUser();
 
@@ -27,7 +28,7 @@ const Page = () => {
     setTicker('');
 
     console.log("before")
-    const res = await axios.post(`http://localhost:5001/getTicker`, { ticker: ticketVal, username: user.name, email: user.email }, { responseType: 'blob' });
+    const res = await axios.post(`http://localhost:5001/getTickerImage`, { ticker: ticketVal, username: user.name, email: user.email }, { responseType: 'blob' });
 
     if (res.status === 204) {
       console.log('No data available for the given date range.');
@@ -38,8 +39,11 @@ const Page = () => {
       setImageMessage(null);
     }
 
-    const res2 = await axios.post(`http://localhost:5001/getLatestOHLC`, { username: user.name, email: user.email });
-    setLatestOHLC(res2.data);
+    const res2 = await axios.post(`http://localhost:5001/getTickerData`, { username: user.name, email: user.email });
+    setLatestOHLC(res2.data.lastOHLC);
+    setPrediction(res2.data.prediction);
+    console.log(res2.data.lastOHLC);
+    console.log(res2.data.prediction);
   };
 
   return (
@@ -145,6 +149,9 @@ const Page = () => {
                           Close: {latestOHLC.close}
                           High: {latestOHLC.high}
                           Low: {latestOHLC.low}</div>}
+      {prediction && <div>Latest Pattern: {prediction.latestPattern}
+                          Pattern Type: {prediction.patternType}
+                          Success Rate: {prediction.successRate}</div>}
     </div>
   );
 };

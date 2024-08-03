@@ -64,7 +64,7 @@ app.get('/getSurveyData', (req, res) => {
         });
 });
 
-app.post('/getTicker', (req, res) => {
+app.post('/getTickerImage', (req, res) => {
     console.log("Getting ticker");
 
     // console.log(req.body)
@@ -85,23 +85,37 @@ app.post('/getTicker', (req, res) => {
         const highMatch = stdout.match(/high\[(\d+\.\d+)\]/);
         const lowMatch = stdout.match(/low\[(\d+\.\d+)\]/);
 
+        const latestPatternMatch = stdout.match(/latestPattern\[(.+?)\]/); // Use .+? to match any character including spaces
+        const patternTypeMatch = stdout.match(/patternType\[(\w+)\]/); // \w matches any word character (equivalent to [a-zA-Z0-9_])
+        const successRateMatch = stdout.match(/successRate\[(\d+)%\]/); // Match digits followed by a %
+
         // Extracting the numeric values
         const open = openMatch ? parseFloat(openMatch[1]) : null;
         const close = closeMatch ? parseFloat(closeMatch[1]) : null;
         const high = highMatch ? parseFloat(highMatch[1]) : null;
         const low = lowMatch ? parseFloat(lowMatch[1]) : null;
 
+        // Extracting the values
+        const latestPattern = latestPatternMatch ? latestPatternMatch[1] : null;
+        const patternType = patternTypeMatch ? patternTypeMatch[1] : null;
+        const successRate = successRateMatch ? parseInt(successRateMatch[1], 10) : null; // Parse the percentage as an integer
+
         console.log(`Open: ${open}, Close: ${close}, High: ${high}, Low: ${low}`);
+        console.log(`Latest Pattern: ${latestPattern}, Pattern Type: ${patternType}, Success Rate: ${successRate}`);
 
         const lastOHLC = {  open: open, 
                             close: close, 
                             high: high, 
                             low: low };
 
+        const prediction = { latestPattern: latestPattern,
+                             patternType: patternType,
+                             successRate: successRate };
+
         db.collection('users')
             .updateOne(
                 { email: req.body.email, username: req.body.username }, // Find a document match
-                { $set: { lastOHLC: lastOHLC } }, // Update the surveyData field
+                { $set: { lastOHLC: lastOHLC, prediction: prediction } }, // Update the surveyData field
                 { upsert: true } // Option to insert a new document if no match is found
             )
             .then(result => {
@@ -143,14 +157,14 @@ app.post('/getTicker', (req, res) => {
     }, 15000); // Adjust
 });
 
-app.post('/getLatestOHLC', (req, res) => {
+app.post('/getTickerData', (req, res) => {
     console.log("Getting latest OHLC data");
 
     db.collection('users')
         .findOne({ email: req.body.email, username: req.body.username })
         .then((user) => {
             if (user) {
-                res.status(200).json(user.lastOHLC);
+                res.status(200).json({ lastOHLC: user.lastOHLC, prediction: user.prediction });
             } else {
                 res.status(204).json({ message: "No user found" });
             }
@@ -171,7 +185,12 @@ app.post("/createUser", (req, res) => {
             if (user) {
                 // If a user with the same username is found, return a 409 Conflict status
                 console.log("Username already exists");
-                return res.status(204).json({ message: "Username already exists" });
+
+                if (user.surveyData) {
+                    return res.send({ message: "Username already exists", doneSurvey: true });
+                }
+
+                return res.send({ message: "Username already exists", doneSurvey: false });
             }
             // If no user is found, proceed to create a new user
             db.collection('users')
@@ -187,6 +206,26 @@ app.post("/createUser", (req, res) => {
         .catch((err) => {
             console.log(err);
             res.status(500).json({ message: "Error checking for existing user" });
+        });
+})
+
+app.post("/populateBank", (req, res) => {
+    console.log("Populating bank with: ", req.body.ticker);
+
+    db.collection('tickerBank')
+        .updateOne(
+            { ticker: req.body.ticker }, // Find a document match
+            { $set: { bank: req.body.bank } }, // Update the bank field
+            { upsert: true } // Option to insert a new document if no match is found
+        )
+        .then(result => {
+            // You can customize your response based on the result if needed
+            console.log("Bank updated successfully");
+            res.status(200).json({ message: "Bank updated successfully" });
+        })
+        .catch(err => {
+            console.error("Error updating bank:", err);
+            res.status(500).json({ message: "Failed to update bank" });
         });
 })
 
