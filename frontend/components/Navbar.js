@@ -1,6 +1,15 @@
 import Link from 'next/link';
 
+
+import { json } from "./json";
+const axios = require("axios");
+
 const Navbar = () => {
+  const call = async () => {
+    const res = await axios.get(`http://localhost:5001/getSurveyData`);
+    console.log(res.data);
+  };
+
   return (
     <nav className="p-6 w-full">
       <div className="flex items-center justify-between">
@@ -27,6 +36,9 @@ const Navbar = () => {
               Login
             </Link>
           </li>
+          <button onClick={call}>
+            Test
+          </button>
         </ul>
       </div>
     </nav>
