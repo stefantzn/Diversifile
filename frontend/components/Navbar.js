@@ -35,13 +35,13 @@ const Navbar = () => {
         {/* Navigation Links */}
         <ul className="flex space-x-4">
           <li>
-            <Link href="/Companies" className="text-white hover:text-gray-300">
-              Companies
+            <Link href="/portfolio" className="text-white hover:text-gray-300">
+              Portfolio
             </Link>
           </li>
           <li>
-            <Link href="/About" className="text-white hover:text-gray-300">
-              About
+            <Link href="/invest" className="text-white hover:text-gray-300">
+              Invest
             </Link>
           </li>
           {!user ? (

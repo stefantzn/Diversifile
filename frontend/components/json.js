@@ -334,7 +334,7 @@ export const json = {
     }
   ],
   "showCompletedPage": false,
-  "navigateToUrl": "portfolio",
+  "navigateToUrl": "invest",
   "navigateToUrlOnCondition": [
     {}
   ]
