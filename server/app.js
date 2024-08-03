@@ -131,6 +131,7 @@ app.post('/getTicker', (req, res) => {
             }
         });
         clearTimeout(killTimeout); 
+        return
     });
     
     // Set a timeout to kill the process if it runs longer than 5 seconds

@@ -49,12 +49,12 @@ const Page = () => {
 
       <div className="flex flex-1">
         <aside className="w-1/2 p-4">
-          <h1 className="text-2xl font-bold mb-4">Search</h1>
+          <h1 className="text-2xl font-bold ">Search</h1>
           
           <input
               type="text"
               placeholder="Search..."
-              className="flex-1 p-2 rounded-l-md border border-gray-600 bg-gray-900 text-white focus:outline-none"
+              className="flex-1 p-2 rounded-l-md border border-gray-600 bg-gray-900 text-white focus:outline-none my-5"
               value={ticker}
               onChange={(e) => setTicker(e.target.value.toUpperCase())}
           />
@@ -64,17 +64,83 @@ const Page = () => {
             >
               Search
             </button>
+
+            
+            {imageUrl && <img src={imageUrl} alt="Graph" width="600" height="600" class="rounded-2xl"/>}
+            
+                {imageUrl && (
+                    <button
+                    className=" mt-5 relative inline-block bg-white text-black text-2xl font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
+                    >
+                    <span className="relative z-10">Add to your portfolio</span>
+                    <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                )}
+    
+            {imageMessage && <div>{imageMessage}</div>}
+           
+
         </aside>
 
-        {/* Main content area */}
-        <main className="w-1/2 p-4">
-          <h1 className="text-2xl font-bold">Your Portfolio</h1>
-          {/* Your main content goes here */}
-        </main>
-      </div>
+        
 
-      {imageUrl && <img src={imageUrl} alt="Test" />}
+        <main className="w-1/2 p-4">
+  <h1 className="text-2xl font-bold mb-3">Recommendations</h1>
+
+  <div className="flex flex-wrap gap-8">
+    {/* First set of images and messages */}
+    <div className="flex flex-col items-center">
+      {imageUrl && <img src={imageUrl} alt="Graph" width="250" height="250" className="mb-4" class="rounded-2xl"/>}
       {imageMessage && <div>{imageMessage}</div>}
+      <button
+        className=" mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
+        >
+        <span className="relative z-10">Add to your portfolio</span>
+        <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+        </button>
+    </div>
+
+    {/* Second set of images and messages */}
+    <div className="flex flex-col items-center">
+      {imageUrl && <img src={imageUrl} alt="Graph" width="250" height="250" className="mb-4" class="rounded-2xl"/>}
+      {imageMessage && <div>{imageMessage}</div>}
+      <button
+        className=" mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
+        >
+        <span className="relative z-10">Add to your portfolio</span>
+        <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+        </button>
+    </div>
+
+    {/* Third set of images and messages */}
+    <div className="flex flex-col items-center">
+      {imageUrl && <img src={imageUrl} alt="Graph" width="250" height="250" className="mb-4" class="rounded-2xl"/>}
+      {imageMessage && <div>{imageMessage}</div>}
+      <button
+        className=" mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
+        >
+        <span className="relative z-10">Add to your portfolio</span>
+        <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+        </button>
+    </div>
+
+    {/* Fourth set of images and messages */}
+    <div className="flex flex-col items-center">
+      {imageUrl && <img src={imageUrl} alt="Graph" width="250" height="250" className="mb-4" class="rounded-2xl"/>}
+      {imageMessage && <div>{imageMessage}</div>}
+      <button
+        className=" mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
+        >
+        <span className="relative z-10">Add to your portfolio</span>
+        <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+        </button>
+    </div>
+  </div>
+</main>
+
+
+    
+      </div>
       {latestOHLC && <div>Open: {latestOHLC.open}
                           Close: {latestOHLC.close}
                           High: {latestOHLC.high}
