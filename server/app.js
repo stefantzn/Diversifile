@@ -79,6 +79,39 @@ app.post('/getTicker', (req, res) => {
         }
         console.log(`MATLAB stdout: ${stdout}`);
 
+        // Regular expressions to match the patterns
+        const openMatch = stdout.match(/open\[(\d+\.\d+)\]/);
+        const closeMatch = stdout.match(/close\[(\d+\.\d+)\]/);
+        const highMatch = stdout.match(/high\[(\d+\.\d+)\]/);
+        const lowMatch = stdout.match(/low\[(\d+\.\d+)\]/);
+
+        // Extracting the numeric values
+        const open = openMatch ? parseFloat(openMatch[1]) : null;
+        const close = closeMatch ? parseFloat(closeMatch[1]) : null;
+        const high = highMatch ? parseFloat(highMatch[1]) : null;
+        const low = lowMatch ? parseFloat(lowMatch[1]) : null;
+
+        console.log(`Open: ${open}, Close: ${close}, High: ${high}, Low: ${low}`);
+
+        const lastOHLC = {  open: open, 
+                            close: close, 
+                            high: high, 
+                            low: low };
+
+        db.collection('users')
+            .updateOne(
+                { email: req.body.email, username: req.body.username }, // Find a document match
+                { $set: { lastOHLC: lastOHLC } }, // Update the surveyData field
+                { upsert: true } // Option to insert a new document if no match is found
+            )
+            .then(result => {
+                // You can customize your response based on the result if needed
+                console.log("Database updated successfully with latest OHLC data");
+            })
+            .catch(err => {
+                console.error("Error updating database:", err);
+            });
+
         if (stdout.includes("No data available for the given date range")) {
             // console.log("No data available for the given date range.");
             // Handle the case when no data is available, e.g., send a specific response
@@ -107,6 +140,24 @@ app.post('/getTicker', (req, res) => {
             child.kill(); // This sends SIGTERM signal
         }
     }, 15000); // Adjust
+});
+
+app.post('/getLatestOHLC', (req, res) => {
+    console.log("Getting latest OHLC data");
+
+    db.collection('users')
+        .findOne({ email: req.body.email, username: req.body.username })
+        .then((user) => {
+            if (user) {
+                res.status(200).json(user.lastOHLC);
+            } else {
+                res.status(204).json({ message: "No user found" });
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({ message: "Error fetching latest OHLC data" });
+        });
 });
 
 app.post("/createUser", (req, res) => {

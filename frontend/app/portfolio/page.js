@@ -1,7 +1,7 @@
 'use client'; // Ensure this file is treated as a Client Component
 
 // import { set } from "@auth0/nextjs-auth0/dist/session";
-import { useUser } from '@auth0/nextjs-auth0';
+import { useUser } from '@auth0/nextjs-auth0/client';
 import Navbar from "../../components/Navbar";
 import { useState } from 'react';
 
@@ -13,16 +13,22 @@ const Page = () => {
 
   const [imageUrl, setImageUrl] = useState(null);
   const [imageMessage, setImageMessage] = useState(null);
+  const [latestOHLC, setLatestOHLC] = useState(null);
+
+  const { user, error, isLoading } = useUser();
 
   const searchTicker = async () => {
     // Handle the search logic here (e.g., send ticker to an API)
     console.log('Searching for ticker:', ticker);
     const ticketVal = ticker;
 
+
     // Clear the input field
     setTicker('');
 
-    const res = await axios.post(`http://localhost:5001/getTicker`, { ticker: ticketVal }, { responseType: 'blob' });
+    console.log("before")
+    const res = await axios.post(`http://localhost:5001/getTicker`, { ticker: ticketVal, username: user.name, email: user.email }, { responseType: 'blob' });
+
     if (res.status === 204) {
       console.log('No data available for the given date range.');
       setImageMessage(`No data available for "${ticketVal}"`);
@@ -31,6 +37,9 @@ const Page = () => {
       setImageUrl(URL.createObjectURL(res.data));
       setImageMessage(null);
     }
+
+    const res2 = await axios.post(`http://localhost:5001/getLatestOHLC`, { username: user.name, email: user.email });
+    setLatestOHLC(res2.data);
   };
 
   return (
@@ -66,6 +75,10 @@ const Page = () => {
 
       {imageUrl && <img src={imageUrl} alt="Test" />}
       {imageMessage && <div>{imageMessage}</div>}
+      {latestOHLC && <div>Open: {latestOHLC.open}
+                          Close: {latestOHLC.close}
+                          High: {latestOHLC.high}
+                          Low: {latestOHLC.low}</div>}
     </div>
   );
 };

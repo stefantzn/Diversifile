@@ -23,6 +23,17 @@ function script(ticker)
         closePrices = [results.c]';
         highPrices = [results.h]';
         lowPrices = [results.l]';
+
+        % Extract current day's data
+        currentDayOpen = openPrices(end);
+        currentDayClose = closePrices(end);
+        currentDayHigh = highPrices(end);
+        currentDayLow = lowPrices(end);
+
+        disp(['open[', num2str(currentDayOpen), ']']);
+        disp(['close[', num2str(currentDayClose), ']']);
+        disp(['high[', num2str(currentDayHigh), ']']);
+        disp(['low[', num2str(currentDayLow), ']']);
         
         % Analyze for candlestick patterns
         [latestPattern, lastPatternIndex, patternType, successRate] = detectLatestPattern(openPrices, closePrices, highPrices, lowPrices, dates);
