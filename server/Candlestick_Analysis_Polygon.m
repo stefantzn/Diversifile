@@ -1,7 +1,7 @@
 function script(ticker)
     % Define the parameters
     apiKey = '6nU0rFnIDQIpf5GexPLwMQ__KHLVdlX1';
-    % ticker = 'AAPL'; % Replace with your desired stock ticker
+    ticker = 'PFE'; % Replace with your desired stock ticker
     multiplier = '1'; % Daily data
     timespan = 'day';
     endDate = datestr(datetime('today'), 'yyyy-mm-dd'); % Today's date
@@ -23,34 +23,35 @@ function script(ticker)
         closePrices = [results.c]';
         highPrices = [results.h]';
         lowPrices = [results.l]';
-
+        
         % Extract current day's data
         currentDayOpen = openPrices(end);
         currentDayClose = closePrices(end);
         currentDayHigh = highPrices(end);
         currentDayLow = lowPrices(end);
-
-        disp(['open[', num2str(currentDayOpen), ']']);
+        
+        disp(['open[', num2str(currentDayOpen), ']'])
         disp(['close[', num2str(currentDayClose), ']']);
         disp(['high[', num2str(currentDayHigh), ']']);
         disp(['low[', num2str(currentDayLow), ']']);
-        
+
         % Analyze for candlestick patterns
-        [latestPattern, lastPatternIndex, patternType, successRate] = detectLatestPattern(openPrices, closePrices, highPrices, lowPrices, dates);
+        [latestPattern, lastPatternIndex, patternType, successRate, detected_time] = detectLatestPattern(openPrices, closePrices, highPrices, lowPrices, dates);
         
         % Call the custom plot function with pattern highlight
-        plotCandlestick(dates, openPrices, highPrices, lowPrices, closePrices, ticker, latestPattern, lastPatternIndex, patternType, successRate);
+        plotCandlestick(dates, openPrices, highPrices, lowPrices, closePrices, ticker, latestPattern, lastPatternIndex, patternType, successRate, detected_time);
     else
         disp('No data available for the given date range.');
     end
 
-    function [latestPattern, lastPatternIndex, patternType, successRate] = detectLatestPattern(openPrices, closePrices, highPrices, lowPrices, dates)
+    function [latestPattern, lastPatternIndex, patternType, successRate, detected_time] = detectLatestPattern(openPrices, closePrices, highPrices, lowPrices, dates)
         n = length(dates);
         latestPattern = '';
         lastPattern = '';
         lastPatternIndex = -1;
         patternType = 'Neutral';
         successRate = '';
+        detected_time = '';  % Initialize detected_time
 
         % Check for patterns for all days
         for i = 3:n
@@ -97,8 +98,10 @@ function script(ticker)
             if i == n
                 if lastPatternIndex == n
                     latestPattern = lastPattern;
+                    detected_time = datestr(dates(lastPatternIndex)); % Set detected_time
                 else
-                    latestPattern = [lastPattern, ' detected on ', datestr(dates(lastPatternIndex))];
+                    latestPattern = lastPattern;
+                    detected_time = datestr(dates(lastPatternIndex)); % Set detected_time
                 end
             end
         end
@@ -181,7 +184,7 @@ function script(ticker)
         end
     end
 
-    function plotCandlestick(dates, openPrices, highPrices, lowPrices, closePrices, symbol, latestPattern, lastPatternIndex, patternType, successRate)
+    function plotCandlestick(dates, openPrices, highPrices, lowPrices, closePrices, symbol, latestPattern, lastPatternIndex, patternType, successRate, detected_time)
         % Function to plot candlestick chart
         figure;
         hold on;
@@ -208,7 +211,7 @@ function script(ticker)
         % Highlight the latest pattern with a circle
         if lastPatternIndex > 0
             % Choose circle color based on pattern type
-            if strcmp(patternType, 'bullish')
+            if strcmp(patternType, 'Bullish')
                 circleColor = [0, 0.9, 0]; % Green
             else
                 circleColor = [0.9, 0, 0]; % Red
@@ -221,12 +224,13 @@ function script(ticker)
         
         % Highlight the latest pattern with a legend
         if ~isempty(latestPattern)
-            % Add success rate to legend
-            legendText = sprintf('%s\nSuccess Rate: %s', latestPattern, successRate);
+            % Add detected time and success rate to legend
+            legendText = sprintf('%s\nDetected on: %s\nSuccess Rate: %s', latestPattern, detected_time, successRate);
             legend(legendText, 'Location', 'northwest');
-            disp(['latestPattern[', latestPattern,']']);
-            disp(['patternType[', patternType, ']']);
-            disp(['successRate[', successRate, ']']);
+            disp(['latestPattern[', latestPattern, ']']);
+            disp(['patternType[', patternType,']']);
+            disp(['successRate[', successRate,']']);
+            disp(['detected_time[', detected_time,']']);
         end
         
         % Format the x-axis to reduce clutter
@@ -242,7 +246,5 @@ function script(ticker)
         title(['Candlestick Chart for ', symbol]);
         grid on;
         hold off;
-
-        saveas(gcf, "plot.png");
     end
 end
