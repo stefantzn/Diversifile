@@ -115,7 +115,7 @@ app.post('/getTickerImage', (req, res) => {
         db.collection('users')
             .updateOne(
                 { email: req.body.email, username: req.body.username }, // Find a document match
-                { $set: { lastOHLC: lastOHLC, prediction: prediction } }, // Update the surveyData field
+                { $set: { ticker: company, lastOHLC: lastOHLC, prediction: prediction } }, // Update the surveyData field
                 { upsert: true } // Option to insert a new document if no match is found
             )
             .then(result => {
@@ -164,7 +164,7 @@ app.post('/getTickerData', (req, res) => {
         .findOne({ email: req.body.email, username: req.body.username })
         .then((user) => {
             if (user) {
-                res.status(200).json({ lastOHLC: user.lastOHLC, prediction: user.prediction });
+                res.status(200).json({ ticker: user.ticker, lastOHLC: user.lastOHLC, prediction: user.prediction });
             } else {
                 res.status(204).json({ message: "No user found" });
             }
@@ -275,7 +275,7 @@ app.post("/populateBank", (req, res) => {
 })
 
 app.post("/addTickerToUser", (req, res) => {
-    
+
 })
 
 
