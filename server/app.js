@@ -90,6 +90,34 @@ app.post('/getTicker', (req, res) => {
     }, 15000); // Adjust
 });
 
+app.post("/createUser", (req, res) => {
+    console.log("Creating user");
+    console.log(req.body);
+    
+    // Check if the username already exists
+    db.collection('users').findOne({ username: req.body.username, email: req.body.email })
+        .then((user) => {
+            if (user) {
+                // If a user with the same username is found, return a 409 Conflict status
+                console.log("Username already exists");
+                return res.status(204).json({ message: "Username already exists" });
+            }
+            // If no user is found, proceed to create a new user
+            db.collection('users')
+                .insertOne(req.body)
+                .then(() => {
+                    res.status(201).json({ message: "User created" });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    res.status(500).json({ message: "Could not create user" });
+                });
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({ message: "Error checking for existing user" });
+        });
+})
 
 
 connectToDb((err) => {

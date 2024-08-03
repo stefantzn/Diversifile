@@ -3,14 +3,17 @@
 import Link from 'next/link';
 import Image from 'next/image'; 
 import logo from '../public/logo.png';
-// import { useUser } from '@auth0/nextjs-auth0/client';
-import { useState } from 'react';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
+import { useState } from 'react';
 
 import { json } from "./json";
 const axios = require("axios");
 
 const Navbar = () => {
+
+  const { user } = useUser();
+
   const [imageUrl, setImageUrl] = useState(null);
 
   const call = async () => {
@@ -41,15 +44,19 @@ const Navbar = () => {
               About
             </Link>
           </li>
-          <li>
-            <Link href="/Login" className="text-white hover:text-gray-300">
-              Login
-            </Link>
-          </li>
-          <button onClick={call}>
+          {!user ? (
+            <li>
+              <a className="text-white" href="/api/auth/login">Login</a>
+            </li>
+          ) : (
+            <li>
+              <a className="text-white" href="/api/auth/logout">Logout</a>
+            </li>
+          )}
+          {/* <button onClick={call}>
             Test
           </button>
-          <img src={imageUrl} alt="Test" />
+          <img src={imageUrl} alt="Test" /> */}
         </ul>
       </div>
     </nav>
