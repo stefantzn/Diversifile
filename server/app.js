@@ -26,6 +26,25 @@ app.get('/', (req, res) => {
 app.post('/storeUserSurvey', (req, res) => {
     console.log("Running MATLAB script")
     console.log(req.body);
+    const { email, username, surveyData } = req.body;
+
+    db.collection('users')
+        .updateOne(
+            { email: email, username: username }, // Find a document match
+            { $set: { surveyData: surveyData } }, // Update the surveyData field
+            { upsert: true } // Option to insert a new document if no match is found
+        )
+        .then(result => {
+            // You can customize your response based on the result if needed
+            console.log("Survey data updated successfully");
+            res.status(200).json({ message: "Survey data updated successfully" });
+        })
+        .catch(err => {
+            console.error("Error updating survey data:", err);
+            res.status(500).json({ message: "Failed to update survey data" });
+        });
+
+
     res.send("Hello from the server 2");
 });
 
