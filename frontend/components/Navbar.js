@@ -28,13 +28,22 @@ const Navbar = () => {
     setImageUrl(URL.createObjectURL(res.data));
     console.log(imageUrl);
   }
+  
+  const goPortfolio = (e) => {
+    e.preventDefault(); // Prevent default link behavior
+    if (user) {
+      router.push('/portfolio');
+    } else {
+      toast.error("Please log in to access your portfolio.");
+    }
+  }
 
-  const goInvest = () => {
+  const goInvest = (e) => {
+    e.preventDefault(); // Prevent default link behavior
     if (user) {
       router.push('/invest');
     } else {
-      console.log("skeg")
-      toast.error("Please log in to build your portfolio.");
+      toast.error("Please log in to invest.");
     }
   }
 
@@ -51,15 +60,18 @@ const Navbar = () => {
         {/* Navigation Links */}
         <ul className="flex space-x-4">
           <li>
-            <Link href="/portfolio" className="text-white hover:text-gray-300">
+            {/* <Link href="/portfolio" className="text-white hover:text-gray-300">
               Portfolio
-            </Link>
+            </Link> */}
+            <button onClick={goPortfolio} className="text-white hover:text-gray-300">
+              Portfolio
+            </button>
           </li>
           <li>
             {/* <Link href="/invest" className="text-white hover:text-gray-300">
               Invest
             </Link> */}
-            <button onclick={goInvest} className="text-white hover:text-gray-300">
+            <button onClick={goInvest} className="text-white hover:text-gray-300">
               Invest
             </button>
           </li>
