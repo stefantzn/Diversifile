@@ -4,8 +4,8 @@ const Navbar = () => {
   return (
     <nav className="p-6 w-full">
       <div className="flex items-center justify-between">
-        <div className="text-white text-5xl font-bold pl-4">
-          <Link href="/" className="hover:text-gray-300">
+        <div className="text-white text-4xl font-bold pl-4">
+          <Link href="/" className="hover text-gray-300">
             D
           </Link>
         </div>

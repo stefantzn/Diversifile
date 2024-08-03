@@ -1,4 +1,5 @@
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar";
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -14,10 +15,12 @@ export default function Home() {
           a simple way to <span className="gradient-text animate-gradient">diversify</span> your assets.
         </h3>
 
-        <button className="relative inline-block bg-white text-black text-2xl font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white">
-          <span className="relative z-10">Build your portfolio here</span>
-          <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-        </button>
+        <Link href="/survey">
+          <button className="relative inline-block bg-white text-black text-2xl font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white">
+            <span className="relative z-10">Build your portfolio here</span>
+            <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+          </button>
+        </Link>
       </main>
     </div>
   );
