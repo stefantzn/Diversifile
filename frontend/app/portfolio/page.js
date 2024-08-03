@@ -28,7 +28,9 @@ const Page = () => {
     setTicker('');
 
     console.log("before")
-    const res = await axios.post(`http://localhost:5001/getTickerImage`, { ticker: ticketVal, username: user.name, email: user.email }, { responseType: 'blob' });
+    // const res = await axios.post(`http://localhost:5001/getTickerImage`, { ticker: ticketVal, username: user.name, email: user.email }, { responseType: 'blob' });
+
+    const res = await axios.post(`http://localhost:5001/populateBank`, { ticker: ticketVal });
 
     if (res.status === 204) {
       console.log('No data available for the given date range.');
@@ -39,11 +41,11 @@ const Page = () => {
       setImageMessage(null);
     }
 
-    const res2 = await axios.post(`http://localhost:5001/getTickerData`, { username: user.name, email: user.email });
-    setLatestOHLC(res2.data.lastOHLC);
-    setPrediction(res2.data.prediction);
-    console.log(res2.data.lastOHLC);
-    console.log(res2.data.prediction);
+    // const res2 = await axios.post(`http://localhost:5001/getTickerData`, { username: user.name, email: user.email });
+    // setLatestOHLC(res2.data.lastOHLC);
+    // setPrediction(res2.data.prediction);
+    // console.log(res2.data.lastOHLC);
+    // console.log(res2.data.prediction);
   };
 
   return (

@@ -212,21 +212,70 @@ app.post("/createUser", (req, res) => {
 app.post("/populateBank", (req, res) => {
     console.log("Populating bank with: ", req.body.ticker);
 
-    db.collection('tickerBank')
-        .updateOne(
-            { ticker: req.body.ticker }, // Find a document match
-            { $set: { bank: req.body.bank } }, // Update the bank field
-            { upsert: true } // Option to insert a new document if no match is found
-        )
-        .then(result => {
-            // You can customize your response based on the result if needed
-            console.log("Bank updated successfully");
-            res.status(200).json({ message: "Bank updated successfully" });
-        })
-        .catch(err => {
-            console.error("Error updating bank:", err);
-            res.status(500).json({ message: "Failed to update bank" });
+    // const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "run('Candlestick_Analysis.m'); exit;"`, (error, stdout, stderr) => {
+        const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "Candlestick_Analysis_Polygon('${req.body.ticker}'); exit;"`, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error executing MATLAB script: ${error.message}`);
+              return; // Removed res.status(500).send('Error running MATLAB script') to focus on the child process handling
+            }
+            console.log(`MATLAB stdout: ${stdout}`);
+    
+            const latestPatternMatch = stdout.match(/latestPattern\[(.+?)\]/); // Use .+? to match any character including spaces
+            const patternTypeMatch = stdout.match(/patternType\[(\w+)\]/); // \w matches any word character (equivalent to [a-zA-Z0-9_])
+            const successRateMatch = stdout.match(/successRate\[(\d+)%\]/); // Match digits followed by a %
+    
+            // Extracting the values
+            const latestPattern = latestPatternMatch ? latestPatternMatch[1] : null;
+            const patternType = patternTypeMatch ? patternTypeMatch[1] : null;
+            const successRate = successRateMatch ? parseInt(successRateMatch[1], 10) : null; // Parse the percentage as an integer
+    
+            console.log(`Latest Pattern: ${latestPattern}, Pattern Type: ${patternType}, Success Rate: ${successRate}`);
+    
+            const prediction = { latestPattern: latestPattern,
+                                 patternType: patternType,
+                                 successRate: successRate };
+    
+            db.collection('tickerBank')
+                .insertOne(
+                    { ticker: req.body.ticker, prediction: prediction } // Option to insert a new document if no match is found
+                )
+                .then(result => {
+                    // You can customize your response based on the result if needed
+                    console.log("Bank updated successfully");
+                    res.status(200).json({ message: "Bank updated successfully" });
+                    return;
+                })
+                .catch(err => {
+                    console.error("Error updating bank:", err);
+                    res.status(500).json({ message: "Failed to update bank" });
+                    return;
+                });
+    
+            if (stdout.includes("No data available for the given date range")) {
+                // console.log("No data available for the given date range.");
+                // Handle the case when no data is available, e.g., send a specific response
+                res.status(204).send("No data available for the given date range.");
+                clearTimeout(killTimeout);
+                return; // Exit the callback to prevent further execution
+            }
+    
+            clearTimeout(killTimeout); 
+            return
         });
+        
+        // Set a timeout to kill the process if it runs longer than 5 seconds
+        const killTimeout = setTimeout(() => {
+            if (!child.killed) {
+                console.log('MATLAB script did not finish in time. Killing the process.');
+                child.kill(); // This sends SIGTERM signal
+            }
+        }, 15000); // Adjust
+
+    
+})
+
+app.post("/addTickerToUser", (req, res) => {
+    
 })
 
 
