@@ -5,11 +5,10 @@ import Image from 'next/image';
 import logo from '../public/logo.png';
 import { useUser } from '@auth0/nextjs-auth0/client';
 
-
-import { json } from "./json";
-const axios = require("axios");
-
 const Navbar = () => {
+
+  const { user } = useUser();
+
   return (
     <nav className="p-6 w-full">
       <div className="flex items-center justify-between">
@@ -31,11 +30,15 @@ const Navbar = () => {
               About
             </Link>
           </li>
-          <li>
-            <Link href="/Login" className="text-white hover:text-gray-300">
-              Login
-            </Link>
-          </li>
+          {!user ? (
+            <li>
+              <a className="text-white" href="/api/auth/login">Login</a>
+            </li>
+          ) : (
+            <li>
+              <a className="text-white" href="/api/auth/logout">Logout</a>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
