@@ -6,7 +6,8 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from "react";
-import { toast } from 'react-hot-toast';
+
+import { Toaster, toast } from "react-hot-toast";
 
 
 const axios = require("axios");
@@ -45,6 +46,7 @@ export default function Home() {
     
     
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
+      <Toaster />
 
     <link rel="icon" href="/favicon.ico" sizes="any" />
 
