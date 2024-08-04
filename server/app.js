@@ -26,12 +26,12 @@ app.get('/', (req, res) => {
 app.post('/storeUserSurvey', (req, res) => {
     console.log("Running MATLAB script")
     console.log(req.body);
-    const { email, username, surveyData } = req.body;
+    const { email, username, surveyData, trueCount } = req.body;
 
     db.collection('users')
         .updateOne(
             { email: email, username: username }, // Find a document match
-            { $set: { surveyData: surveyData } }, // Update the surveyData field
+            { $set: { surveyData: surveyData, trueCount: trueCount } }, // Update the surveyData field
             { upsert: true } // Option to insert a new document if no match is found
         )
         .then(result => {
@@ -307,7 +307,7 @@ app.post("/getRecommendations", async (req, res) => {
     const riskAversionScore = req.body.riskAversionScore;
 
     const tickerDocs = await db.collection('tickerBank').find(
-        { "prediction.successRate": { $gt: 70 } }
+        { "prediction.successRate": { $gt: 90 - (Math.floor(riskAversionScore / 2) * 10) } }
     ).toArray();
 
     let tickers = [];
@@ -315,12 +315,31 @@ app.post("/getRecommendations", async (req, res) => {
     tickerDocs.forEach((ticker) => {
         tickers.push(ticker.ticker);
     });
-    
+
     console.log(tickers);
 
     res.send(tickers);
 })
 
+app.post("/getScore", (req, res) => {
+    console.log("Getting score");
+    const { username, email } = req.body;
+    console.log(req.body);
+
+    db.collection('users').findOne({ email: email, username: username })
+        .then((user) => {
+            if (user) {
+                console.log("Over Here: ", user.trueCount);
+                res.status(200).json({ riskAversionScore: user.trueCount });
+            } else {
+                res.status(204).json({ message: "No user found" });
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({ message: "Error fetching risk aversion score" });
+        });
+})
 
 connectToDb((err) => {
     if (!err) {
