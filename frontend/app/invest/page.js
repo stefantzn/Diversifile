@@ -154,17 +154,19 @@ const Page = () => {
           )}
 
           {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="Graph"
-              width="600"
-              height="600"
-              className="rounded-2xl"
-            />
+            <div className="flex justify-center">
+              <img
+                src={imageUrl}
+                alt="Graph"
+                width="600"
+                height="600"
+                className="rounded-2xl"
+              />
+            </div>
           )}
 
           {imageUrl && (
-            <div className="flex items-start mt-5">
+            <div className="flex justify-center items-start mt-5">
               <button
                 onClick={addTickerToPortfolio}
                 className="relative inline-block bg-white text-black text-sm font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
@@ -194,9 +196,9 @@ const Page = () => {
           {imageMessage && <div>{imageMessage}</div>}
         </aside>
 
-        <main className="w-1/2 p-4">
-          <h1 className="text-2xl font-bold mb-3">Recommendations</h1>
-          <div className="flex flex-wrap gap-8 overflow-auto max-h-[1304px]">
+        <main className="w-1/2 p-4 crater-effect rounded-xl">
+          <h1 className="text-2xl font-bold mb-6">Recommendations</h1>
+          <div className="flex justify-center flex-wrap gap-8 overflow-y-auto max-h-[80vh]">
             {recommendations.map((recommendation, index) => (
               <div key={index} className="flex flex-col items-center">
                 <img
@@ -204,13 +206,13 @@ const Page = () => {
                   alt="Graph"
                   width="250"
                   height="250"
-                  className="mb-4 rounded-2xl"
+                  className="mb-2 rounded-2xl"
                 />
                 {/* Uncomment if you have a specific message for each image */}
                 {/* <div>{imageMessage}</div> */}
                 <button
                   onClick={() => { searchTicker(recommendation); }}
-                  className="mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
+                  className="relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
                   disabled={loading}
                 >
                   <span className="relative z-10">{recommendation}</span>
