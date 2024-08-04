@@ -69,14 +69,15 @@ app.post('/getTickerImage', (req, res) => {
     const company = req.body.ticker;
     console.log(company)
 
+    
+
     // const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "run('Candlestick_Analysis.m'); exit;"`, (error, stdout, stderr) => {
     const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "Candlestick_Analysis_Polygon('${company}'); exit;"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`Error executing MATLAB script: ${error.message}`);
           return; // Removed res.status(500).send('Error running MATLAB script') to focus on the child process handling
         }
-        console.log(`MATLAB stdout: ${stdout}`);
-
+      
         // Regular expressions to match the patterns
         const openMatch = stdout.match(/open\[(\d+\.\d+)\]/);
         const closeMatch = stdout.match(/close\[(\d+\.\d+)\]/);
@@ -282,13 +283,7 @@ app.post("/populateBank", (req, res) => {
                 console.log('MATLAB script did not finish in time. Killing the process.');
                 child.kill(); // This sends SIGTERM signal
             }
-<<<<<<< Updated upstream
         }, 15000); // Adjust
-=======
-        },50000); // Adjust
-
-    
->>>>>>> Stashed changes
 })
 
 app.post("/addTickerToPortfolio", (req, res) => {
