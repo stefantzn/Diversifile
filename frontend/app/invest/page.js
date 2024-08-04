@@ -85,16 +85,26 @@ const Page = () => {
     }}
 
   useEffect(() => {
-    console.log("This is the user: ", user);
-    
-    axios.post(`http://localhost:5001/getRecommendations`, { riskAversionScore: 5 })
-    .then((res) => {
-      console.log(res.data);
-      setRecommendations(res.data);
+    if (user) {
+      console.log("This is the user: ", user);
 
-    })
+      let riskAversionScore;
+      axios.post(`http://localhost:5001/getScore`, { username: user.name, email: user.email })
+      .then((res) => {
+        console.log(res.data);
+        riskAversionScore = res.data.riskAversionScore;
+
+        axios.post(`http://localhost:5001/getRecommendations`, { riskAversionScore: riskAversionScore })
+        .then((res) => {
+          console.log(res.data);
+          setRecommendations(res.data);
+
+        })
+      })
+    }
+    
     // console.log(res.data);
-  }, []);
+  }, [user]);
 
   return (
     <div className="min-h-screen flex flex-col text-white">
@@ -186,90 +196,28 @@ const Page = () => {
 
         <main className="w-1/2 p-4">
           <h1 className="text-2xl font-bold mb-3">Recommendations</h1>
-          <div className="flex flex-wrap gap-8">
-            {/* First set of images and messages */}
-            {recommendations[0] &&
-            <div className="flex flex-col items-center">
+          <div className="flex flex-wrap gap-8 overflow-auto max-h-[1304px]">
+            {recommendations.map((recommendation, index) => (
+              <div key={index} className="flex flex-col items-center">
                 <img
-                  src={`${recommendations[0]}.png`}
+                  src={`${recommendation}.png`}
                   alt="Graph"
                   width="250"
                   height="250"
                   className="mb-4 rounded-2xl"
                 />
-              {/* <div>Hey</div> */}
+                {/* Uncomment if you have a specific message for each image */}
+                {/* <div>{imageMessage}</div> */}
                 <button
-                  onClick={() => {searchTicker(recommendations[0])}}
+                  onClick={() => { searchTicker(recommendation); }}
                   className="mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
                   disabled={loading}
                 >
-                  <span className="relative z-10">{recommendations[0]}</span>
+                  <span className="relative z-10">{recommendation}</span>
                   <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
-            </div>}
-
-            {/* Second set of images and messages */}
-            {recommendations[1] &&
-            <div className="flex flex-col items-center">
-              <img
-                  src={`${recommendations[1]}.png`}
-                  alt="Graph"
-                  width="250"
-                  height="250"
-                  className="mb-4 rounded-2xl"
-                />
-              {/* {imageMessage && <div>{imageMessage}</div>} */}
-              <button
-                  onClick={() => {searchTicker(recommendations[1])}}
-                  className="mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
-                  disabled={loading}
-                >
-                  <span className="relative z-10">{recommendations[1]}</span>
-                  <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                </button>
-            </div>}
-
-            {/* Third set of images and messages */}
-            {recommendations[2] &&
-            <div className="flex flex-col items-center">
-              <img
-                  src={`${recommendations[2]}.png`}
-                  alt="Graph"
-                  width="250"
-                  height="250"
-                  className="mb-4 rounded-2xl"
-                />
-              {/* {imageMessage && <div>{imageMessage}</div>} */}
-              <button
-                  onClick={() => {searchTicker(recommendations[2])}}
-                  className="mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
-                  disabled={loading}
-                >
-                  <span className="relative z-10">{recommendations[2]}</span>
-                  <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                </button>
-            </div>}
-
-            {/* Fourth set of images and messages */}
-            {recommendations[3] &&
-            <div className="flex flex-col items-center">
-              <img
-                  src={`${recommendations[3]}.png`}
-                  alt="Graph"
-                  width="250"
-                  height="250"
-                  className="mb-4 rounded-2xl"
-                />
-              {/* {imageMessage && <div>{imageMessage}</div>} */}
-              <button
-                  onClick={() => {searchTicker(recommendations[3])}}
-                  className="mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
-                  disabled={loading}
-                >
-                  <span className="relative z-10">{recommendations[3]}</span>
-                  <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                </button>
-            </div>}
+              </div>
+            ))}
           </div>
         </main>
       </div>

@@ -16,6 +16,7 @@ export default function Home() {
 
   const router = useRouter();
   const { user, error, isLoading } = useUser();
+  
 
   useEffect(() => {
     console.log("This is the user: ", user)
@@ -33,7 +34,17 @@ export default function Home() {
     // Check if user exists (isLoggedIn should be replaced with your actual check)
     if (user) {
       // User exists, proceed to navigate
-      router.push('/survey');
+      axios.post(`http://localhost:5001/createUser`, { username: user.name, email: user.email })
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.doneSurvey) {
+          router.push('/portfolio');
+          return
+        } else {
+          // toast.error("Please complete the survey to start building your portfolio.");
+          router.push('/survey');
+        }
+      })
     } else {
       // User does not exist, show toast message
       console.log("hey")
