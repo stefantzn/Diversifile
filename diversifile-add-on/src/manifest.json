@@ -1,0 +1,21 @@
+{
+    "testId": "d22ade9f-c74c-498c-8617-2247372bb85e",
+    "name": "Diversifile Add On",
+    "version": "1.0.0",
+    "manifestVersion": 2,
+    "requirements": {
+        "apps": [
+            {
+                "name": "Express",
+                "apiVersion": 1
+            }
+        ]
+    },
+    "entryPoints": [
+        {
+            "type": "panel",
+            "id": "panel1",
+            "main": "index.html"
+        }
+    ]
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Get started with Add-on development using JavaScript" />
+    <meta name="keywords" content="Adobe, Express, Add-On, JavaScript" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Get Started</title>
+    <style>
+        body {
+            background-color: #031d2b;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        h2 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b, #ff7e5f, #feb47b);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientAnimation 3s ease infinite;
+            margin: 0;
+        }
+        p {
+            color: white;
+            max-width: 90%;
+            margin: 20px 0;
+        }
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .gallery img {
+            max-width: 200px; /* Adjust the width as necessary */
+            height: auto;
+            margin: 10px 0;
+        }
+        button {
+            background-color: rgb(82, 88, 228);
+            border-color: rgb(82, 88, 228);
+            border-radius: 16px;
+            border-style: solid;
+            color: rgb(255, 255, 255);
+            height: 32px;
+            margin-top: 20px;
+        }
+        button:disabled {
+            background-color: rgb(177, 177, 177);
+            border-color: rgb(177, 177, 177);
+        }
+        button:not([disabled]):hover {
+            background-color: rgb(64, 70, 202);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Diversifile</h2>
+        <p>Welcome to the Diversifile Adobe Express add-on! Drag and drop your searched graphs onto your PDF.</p>
+        <div class="gallery" id="gallery"></div>
+  
+    </div>
+    <script type="module" src="index.js"></script>
+</body>
+</html>
