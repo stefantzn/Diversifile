@@ -304,7 +304,20 @@ app.post("/addTickerToPortfolio", (req, res) => {
 
 app.post("/getRecommendations", async (req, res) => {
     console.log("Getting recommendations");
-    const riskAversionScore = req.body.riskAversionScore;
+
+    const { email, password, riskAversionScore } = req.body;
+
+    let existingTickers;
+
+    db.collection('users').findOne({ email: email, password: password })
+        .then((user) => {
+            if (user) {
+                existingTickers = user.tickers;
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 
     const tickerDocs = await db.collection('tickerBank').find(
         { "prediction.successRate": { $gt: 90 - (Math.floor(riskAversionScore / 2) * 10) } }
@@ -313,7 +326,9 @@ app.post("/getRecommendations", async (req, res) => {
     let tickers = [];
 
     tickerDocs.forEach((ticker) => {
-        tickers.push(ticker.ticker);
+        if (!existingTickers || !existingTickers.includes(ticker.ticker)) {
+            tickers.push(ticker.ticker);
+        }
     });
 
     console.log(tickers);
@@ -340,6 +355,28 @@ app.post("/getScore", (req, res) => {
             res.status(500).json({ message: "Error fetching risk aversion score" });
         });
 })
+
+
+app.post("/getUserPortfolio", (req, res) => {
+    console.log("Getting user portfolio");
+    const { email, password } = req.body;
+
+    db.collection('users').findOne({ email: email, password: password })
+        .then((user) => {
+            if (user) {
+                console.log("Sending user portfolio: ", user.tickers);
+                res.status(200).json({ tickers: user.tickers });
+            } else {
+                res.status(204).json({ message: "No user found" });
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({ message: "Error fetching user portfolio" });
+        });
+})
+
+
 
 connectToDb((err) => {
     if (!err) {

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 // import { set } from "@auth0/nextjs-auth0/dist/session";
 
 import { toast } from "react-hot-toast";
+// import { set } from "@auth0/nextjs-auth0/dist/session";
 
 const axios = require("axios");
 
@@ -94,11 +95,14 @@ const Page = () => {
         console.log(res.data);
         riskAversionScore = res.data.riskAversionScore;
 
-        axios.post(`http://localhost:5001/getRecommendations`, { riskAversionScore: riskAversionScore })
+        axios.post(`http://localhost:5001/getRecommendations`, { username: user.name, email: user.email, riskAversionScore: riskAversionScore })
         .then((res) => {
           console.log(res.data);
           setRecommendations(res.data);
-
+          if (tickerRes) {
+            const recommendedList = res.data.filter(item => item !== tickerRes.ticker);
+            setRecommendations(recommendedList);
+          }
         })
       })
     }
@@ -131,7 +135,7 @@ const Page = () => {
           {loading && (
             <div className="flex justify-center items-center">
               <svg
-                className="animate-spin h-5 w-5 text-white"
+                className="animate-spin h-10 w-10 text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -176,18 +180,18 @@ const Page = () => {
                 <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
               </button>
               <div className="ml-4 flex flex-col space-y-1 text-xs">
-                {tickerRes && <div>Ticker: {tickerRes.ticker}</div>}
-                {latestOHLC && (
-                  <>
-                    <div>Open: {latestOHLC.open} | Close: {latestOHLC.close}</div>
-                    <div>High: {latestOHLC.high} | Low: {latestOHLC.low}</div>
-                  </>
-                )}
+                {tickerRes && <div className="text-base font-black pb-4">Ticker: {tickerRes.ticker}</div>}
                 {prediction && (
-                  <>
+                  <div className="text-xs font-extrabold pb-2">
                     <div>Latest Pattern: {prediction.latestPattern} | Time: {prediction.detectedTime}</div>
                     <div>Pattern Type: {prediction.patternType} | Success Rate: {prediction.successRate} %</div>
-                  </>
+                  </div>
+                )}
+                {latestOHLC && (
+                  <div>
+                    <div>Open: {latestOHLC.open} | Close: {latestOHLC.close}</div>
+                    <div>High: {latestOHLC.high} | Low: {latestOHLC.low}</div>
+                  </div>
                 )}
               </div>
             </div>
@@ -198,7 +202,7 @@ const Page = () => {
 
         <main className="w-1/2 p-4 crater-effect rounded-xl">
           <h1 className="text-2xl font-bold mb-6">Recommendations</h1>
-          <div className="flex justify-center flex-wrap gap-8 overflow-y-auto max-h-[80vh]">
+          <div className="flex justify-center flex-wrap gap-8 overflow-y-auto max-h-[75vh]">
             {recommendations.map((recommendation, index) => (
               <div key={index} className="flex flex-col items-center">
                 <img
