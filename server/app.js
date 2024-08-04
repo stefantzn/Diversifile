@@ -43,9 +43,6 @@ app.post('/storeUserSurvey', (req, res) => {
             console.error("Error updating survey data:", err);
             res.status(500).json({ message: "Failed to update survey data" });
         });
-
-
-    res.send("Hello from the server 2");
 });
 
 app.get('/getSurveyData', (req, res) => {
@@ -100,7 +97,7 @@ app.post('/getTickerImage', (req, res) => {
         // Extracting the values
         const latestPattern = latestPatternMatch ? latestPatternMatch[1] : null;
         const patternType = patternTypeMatch ? patternTypeMatch[1] : null;
-        const successRate = successRateMatch ? successRateMatch[1] + "%" : null;
+        const successRate = successRateMatch ? parseInt(successRateMatch[1]) : null;
         const detectedTime = detectedTimeMatch ? detectedTimeMatch[1] : null;
 
         console.log(`Open: ${open}, Close: ${close}, High: ${high}, Low: ${low}`);
@@ -227,17 +224,20 @@ app.post("/populateBank", (req, res) => {
             const latestPatternMatch = stdout.match(/latestPattern\[(.+?)\]/); // Use .+? to match any character including spaces
             const patternTypeMatch = stdout.match(/patternType\[(\w+)\]/); // \w matches any word character (equivalent to [a-zA-Z0-9_])
             const successRateMatch = stdout.match(/successRate\[(\d+)%\]/); // Match digits followed by a %
-    
+            const detectedTimeMatch = stdout.match(/detected_time\[(.+?)\]/); // Use .+? to match any character including spaces
+
             // Extracting the values
             const latestPattern = latestPatternMatch ? latestPatternMatch[1] : null;
             const patternType = patternTypeMatch ? patternTypeMatch[1] : null;
-            const successRate = successRateMatch ? parseInt(successRateMatch[1], 10) : null; // Parse the percentage as an integer
-    
+            const successRate = successRateMatch ? parseInt(successRateMatch[1]) : null;
+            const detectedTime = detectedTimeMatch ? detectedTimeMatch[1] : null;
+            
             console.log(`Latest Pattern: ${latestPattern}, Pattern Type: ${patternType}, Success Rate: ${successRate}`);
     
             const prediction = { latestPattern: latestPattern,
                                  patternType: patternType,
-                                 successRate: successRate };
+                                 successRate: successRate,
+                                 detectedTime: detectedTime };
     
             db.collection('tickerBank')
                 .insertOne(
@@ -246,23 +246,32 @@ app.post("/populateBank", (req, res) => {
                 .then(result => {
                     // You can customize your response based on the result if needed
                     console.log("Bank updated successfully");
-                    res.status(200).json({ message: "Bank updated successfully" });
+                    // res.status(200).json({ message: "Bank updated successfully" });
                     return;
                 })
                 .catch(err => {
                     console.error("Error updating bank:", err);
-                    res.status(500).json({ message: "Failed to update bank" });
+                    // res.status(500).json({ message: "Failed to update bank" });
                     return;
                 });
     
             if (stdout.includes("No data available for the given date range")) {
                 // console.log("No data available for the given date range.");
                 // Handle the case when no data is available, e.g., send a specific response
-                res.status(204).send("No data available for the given date range.");
+                // res.status(204).send("No data available for the given date range.");
                 clearTimeout(killTimeout);
                 return; // Exit the callback to prevent further execution
             }
     
+            res.sendFile(path.join(__dirname, 'plot.png'), (err) => {
+                if (err) {
+                    console.log(err);
+                    // res.status(500).send('Failed to send the image');
+                } else {
+                    console.log('Image sent successfully');
+                }
+            });
+
             clearTimeout(killTimeout); 
             return
         });
@@ -274,12 +283,42 @@ app.post("/populateBank", (req, res) => {
                 child.kill(); // This sends SIGTERM signal
             }
         }, 15000); // Adjust
-
-    
 })
 
-app.post("/addTickerToUser", (req, res) => {
+app.post("/addTickerToPortfolio", (req, res) => {
+    const { email, password, ticker } = req.body;
 
+    db.collection('users').updateOne(
+        { email: email, password: password }, // Filter document by email and password
+        { $push: { tickers: ticker } }, 
+        { upsert: true }).then(result => {
+            // You can customize your response based on the result if needed
+            console.log("Ticker added to user successfully");
+            res.status(200).json({ message: "Ticker added to user successfully" });
+        })
+        .catch(err => {
+            console.error("Error adding ticker to user: ", err);
+            res.status(500).json({ message: "Error adding ticker to user" });
+        });
+})
+
+app.post("/getRecommendations", async (req, res) => {
+    console.log("Getting recommendations");
+    const riskAversionScore = req.body.riskAversionScore;
+
+    const tickerDocs = await db.collection('tickerBank').find(
+        { "prediction.successRate": { $gt: 70 } }
+    ).toArray();
+
+    let tickers = [];
+
+    tickerDocs.forEach((ticker) => {
+        tickers.push(ticker.ticker);
+    });
+    
+    console.log(tickers);
+
+    res.send(tickers);
 })
 
 

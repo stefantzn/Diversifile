@@ -2,8 +2,10 @@
 
 import { useUser } from "@auth0/nextjs-auth0/client";
 import Navbar from "../../components/Navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { set } from "@auth0/nextjs-auth0/dist/session";
+
+import { toast } from "react-hot-toast";
 
 const axios = require("axios");
 
@@ -16,20 +18,30 @@ const Page = () => {
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const [recommendations, setRecommendations] = useState([]);
+
   const { user } = useUser();
 
-  const searchTicker = async () => {
+  const searchTicker = async (ticketVal="") => {
     setLoading(true);
-    const ticketVal = ticker;
-    console.log("weoguwg")
+    if (ticker) {
+      ticketVal = ticker;
+    }
+    console.log("ew")
+    setTicker("");
 
     try {
-      console.log("tet")
       const res = await axios.post(
         `http://localhost:5001/getTickerImage`,
         { ticker: ticketVal, username: user.name, email: user.email },
         { responseType: "blob" }
       );
+
+      // const res = await axios.post(
+      //   `http://localhost:5001/populateBank`,
+      //   { ticker: ticketVal },
+      //   { responseType: "blob" }
+      // );
 
       console.log(res.status);
       if (res.status === 204) {
@@ -45,6 +57,7 @@ const Page = () => {
         username: user.name,
         email: user.email,
       });
+      console.log(res2.data);
       setTickerRes(res2.data);
       setLatestOHLC(res2.data.lastOHLC);
       setPrediction(res2.data.prediction);
@@ -54,6 +67,34 @@ const Page = () => {
       setLoading(false);
     }
   };
+
+  const addTickerToPortfolio = async () => {
+    try {
+      await axios.post(`http://localhost:5001/addTickerToPortfolio`, {
+        ticker: tickerRes.ticker,
+        username: user.name,
+        email: user.email,
+      });
+      toast.success(`${tickerRes.ticker} added to portfolio`);
+      setImageMessage(null);
+      setImageUrl(null);
+      setTickerRes(null);
+    } catch (error) {
+      console.error("Error adding ticker to portfolio:", error)
+      toast.error("Error adding ticker to portfolio");
+    }}
+
+  useEffect(() => {
+    console.log("This is the user: ", user);
+    
+    axios.post(`http://localhost:5001/getRecommendations`, { riskAversionScore: 5 })
+    .then((res) => {
+      console.log(res.data);
+      setRecommendations(res.data);
+
+    })
+    // console.log(res.data);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col text-white">
@@ -115,6 +156,7 @@ const Page = () => {
           {imageUrl && (
             <div className="flex items-start mt-5">
               <button
+                onClick={addTickerToPortfolio}
                 className="relative inline-block bg-white text-black text-sm font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
                 disabled={loading}
               >
@@ -132,7 +174,7 @@ const Page = () => {
                 {prediction && (
                   <>
                     <div>Latest Pattern: {prediction.latestPattern} | Time: {prediction.detectedTime}</div>
-                    <div>Pattern Type: {prediction.patternType} | Success Rate: {prediction.successRate}</div>
+                    <div>Pattern Type: {prediction.patternType} | Success Rate: {prediction.successRate} %</div>
                   </>
                 )}
               </div>
@@ -146,96 +188,88 @@ const Page = () => {
           <h1 className="text-2xl font-bold mb-3">Recommendations</h1>
           <div className="flex flex-wrap gap-8">
             {/* First set of images and messages */}
+            {recommendations[0] &&
             <div className="flex flex-col items-center">
-              {imageUrl && (
                 <img
-                  src={imageUrl}
+                  src={`${recommendations[0]}.png`}
                   alt="Graph"
                   width="250"
                   height="250"
                   className="mb-4 rounded-2xl"
                 />
-              )}
-              {imageMessage && <div>{imageMessage}</div>}
-              {imageUrl && (
+              {/* <div>Hey</div> */}
                 <button
+                  onClick={() => {searchTicker(recommendations[0])}}
                   className="mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
                   disabled={loading}
                 >
-                  <span className="relative z-10">Add to your portfolio</span>
+                  <span className="relative z-10">{recommendations[0]}</span>
                   <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
-              )}
-            </div>
+            </div>}
 
             {/* Second set of images and messages */}
+            {recommendations[1] &&
             <div className="flex flex-col items-center">
-              {imageUrl && (
-                <img
-                  src={imageUrl}
+              <img
+                  src={`${recommendations[1]}.png`}
                   alt="Graph"
                   width="250"
                   height="250"
                   className="mb-4 rounded-2xl"
                 />
-              )}
-              {imageMessage && <div>{imageMessage}</div>}
-              {imageUrl && (
-                <button
+              {/* {imageMessage && <div>{imageMessage}</div>} */}
+              <button
+                  onClick={() => {searchTicker(recommendations[1])}}
                   className="mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
                   disabled={loading}
                 >
-                  <span className="relative z-10">Add to your portfolio</span>
+                  <span className="relative z-10">{recommendations[1]}</span>
                   <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
-              )}
-            </div>
+            </div>}
 
             {/* Third set of images and messages */}
+            {recommendations[2] &&
             <div className="flex flex-col items-center">
-              {imageUrl && (
-                <img
-                  src={imageUrl}
+              <img
+                  src={`${recommendations[2]}.png`}
                   alt="Graph"
                   width="250"
                   height="250"
                   className="mb-4 rounded-2xl"
                 />
-              )}
-              {imageMessage && <div>{imageMessage}</div>}
-              {imageUrl && (
-                <button
+              {/* {imageMessage && <div>{imageMessage}</div>} */}
+              <button
+                  onClick={() => {searchTicker(recommendations[2])}}
                   className="mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
                   disabled={loading}
                 >
-                  <span className="relative z-10">Add to your portfolio</span>
+                  <span className="relative z-10">{recommendations[2]}</span>
                   <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
-              )}
-            </div>
+            </div>}
 
             {/* Fourth set of images and messages */}
+            {recommendations[3] &&
             <div className="flex flex-col items-center">
-              {imageUrl && (
-                <img
-                  src={imageUrl}
+              <img
+                  src={`${recommendations[3]}.png`}
                   alt="Graph"
                   width="250"
                   height="250"
                   className="mb-4 rounded-2xl"
                 />
-              )}
-              {imageMessage && <div>{imageMessage}</div>}
-              {imageUrl && (
-                <button
+              {/* {imageMessage && <div>{imageMessage}</div>} */}
+              <button
+                  onClick={() => {searchTicker(recommendations[3])}}
                   className="mt-5 relative inline-block bg-white text-black text-xs font-bold py-4 px-8 rounded-2xl transition duration-300 hover:bg-gray-500 hover:text-white"
                   disabled={loading}
                 >
-                  <span className="relative z-10">Add to your portfolio</span>
+                  <span className="relative z-10">{recommendations[3]}</span>
                   <div className="absolute inset-0 z-0 animated-gradient opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
-              )}
-            </div>
+            </div>}
           </div>
         </main>
       </div>
