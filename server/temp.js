@@ -59,4 +59,17 @@
 // export default Navbar;
 
 
-console.log( Math.floor(7 / 2))
+// console.log( Math.floor(7 / 2))
+
+const { exec } = require('child_process');
+
+const company = "TSLA";
+
+const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "Candlestick_Analysis_Polygon('${company}'); exit;"`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing MATLAB script: ${error.message}`);
+      return; // Removed res.status(500).send('Error running MATLAB script') to focus on the child process handling
+    }
+    console.log(`MATLAB stdout: ${stdout}`);
+})
+

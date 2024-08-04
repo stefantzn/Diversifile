@@ -170,8 +170,8 @@ const Portfolio = () => {
                       <div className="pb-10 text-3xl">
                         <div>Latest Pattern: {prediction.latestPattern}</div>
                         <div>Time: {prediction.detectedTime}</div>
-                        <div>Pattern Type: {prediction.patternType}</div>
-                        <div>Success Rate: {prediction.successRate} %</div>
+                        <div>Pattern Type: <span className={`${prediction.patternType === "Bullish" ? "text-green-500" : "text-red-500"}`}>{prediction.patternType}</span></div>
+                        <div>Accuracy Rate: {prediction.successRate} %</div>
                       </div>
                     )}
                     {latestOHLC && (

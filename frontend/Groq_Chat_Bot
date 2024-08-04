@@ -1,0 +1,27 @@
+from groq import Groq
+
+client = Groq(
+    api_key="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",
+)
+
+
+def chat_bot(user_prompt):
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a financial literacy assistant. Be concise and limit your word count"
+            },
+            {
+                "role": "user",
+                "content": user_prompt,
+            }
+        ],
+        model="llama3-8b-8192",
+        temperature=0.2,
+    )
+
+    return chat_completion.choices[0].message.content
+
+user_prompt = "What is E/P and what is the importance for potential investors?"
+print(chat_bot(user_prompt))

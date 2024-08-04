@@ -184,7 +184,7 @@ const Page = () => {
                 {prediction && (
                   <div className="text-xs font-extrabold pb-2">
                     <div>Latest Pattern: {prediction.latestPattern} | Time: {prediction.detectedTime}</div>
-                    <div>Pattern Type: {prediction.patternType} | Success Rate: {prediction.successRate} %</div>
+                    <div>Pattern Type: {prediction.patternType} | Accuracy Rate: {prediction.successRate} %</div>
                   </div>
                 )}
                 {latestOHLC && (

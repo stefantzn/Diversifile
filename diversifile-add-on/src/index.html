@@ -23,8 +23,8 @@
             text-align: center;
         }
         h2 {
-            font-size: 2rem;
-            background: linear-gradient(90deg, #ff7e5f, #feb47b, #ff7e5f, #feb47b);
+            font-size: 3rem;
+            background: linear-gradient(to right, #ffffff, #12f7ff, #ffffff, #07ffda);
             background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -46,6 +46,17 @@
             100% {
                 background-position: 0% 50%;
             }
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            padding: 10px;
+            border-radius: 16px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            width: 200px;
+            outline: none;
         }
         .gallery {
             display: flex;
@@ -81,8 +92,10 @@
     <div class="container">
         <h2>Diversifile</h2>
         <p>Welcome to the Diversifile Adobe Express add-on! Drag and drop your searched graphs onto your PDF.</p>
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Search for an graph..." />
+        </div>
         <div class="gallery" id="gallery"></div>
-  
     </div>
     <script type="module" src="index.js"></script>
 </body>
