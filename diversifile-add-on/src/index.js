@@ -1,42 +1,26 @@
 import AddOnSdk from "https://new.express.adobe.com/static/add-on-sdk/sdk.js";
 
 const IMAGES = new Map([
-    ["plot1.png", "images/plot1.png"],
-    ["plot2.png", "images/plot2.png"]
+    ["tsla.png", "images/tsla.png"],
+    ["metv.png", "images/metv.png"],
+    ["amzn.png", "images/amzn.png"],
+    ["air.png", "images/air.png"],
+    ["aapl.png", "images/aapl.png"]
 ]);
 
 let gallery;
 
 // Wait for the SDK to be ready before rendering elements in the DOM.
 AddOnSdk.ready.then(async () => {
-    // Get the gallery element
     gallery = document.getElementById('gallery');
-
-    IMAGES.forEach((url, id) => {
-        const image = document.createElement("img");
-        image.id = id;
-        image.src = url;
-        image.style.maxWidth = "200px"; // Set the max-width to 200 pixels
-        image.style.height = "200x"; // Maintain aspect ratio
-        image.addEventListener("click", addToDocument);
-
-        // Enable drag to document for the image.
-        AddOnSdk.app.enableDragToDocument(image, {
-            previewCallback: element => {
-                return new URL(element.src);
-            },
-            completionCallback: async (element) => {
-                return [{ blob: await getBlob(element.src) }];
-            }
-        });
-
-        gallery.appendChild(image);
-    });
 
     // Register event handler for "dragstart" event
     AddOnSdk.app.on("dragstart", startDrag);
-    // Register event handler for 'dragend' event
+    // Register event handler for "dragend" event
     AddOnSdk.app.on("dragend", endDrag);
+
+    // Add event listener to the search bar
+    document.getElementById('search').addEventListener('input', filterImages);
 });
 
 /**
@@ -71,4 +55,37 @@ function endDrag(eventData) {
  */
 async function getBlob(url) {
     return await fetch(url).then(response => response.blob());
+}
+
+/**
+ * Filter images based on the search input.
+ */
+function filterImages() {
+    const searchTerm = document.getElementById('search').value.toLowerCase();
+    gallery.innerHTML = ''; // Clear gallery before filtering
+
+    // Convert searchTerm to image name format (e.g., "amzn" to "amzn.png")
+    const searchId = searchTerm + '.png';
+    
+    if (IMAGES.has(searchId)) {
+        const url = IMAGES.get(searchId);
+        const image = document.createElement("img");
+        image.id = searchId;
+        image.src = url;
+        image.style.maxWidth = "300px"; // Set the max-width to 200 pixels
+        image.style.height = "auto"; // Maintain aspect ratio
+        image.addEventListener("click", addToDocument);
+
+        // Enable drag to document for the image.
+        AddOnSdk.app.enableDragToDocument(image, {
+            previewCallback: element => {
+                return new URL(element.src);
+            },
+            completionCallback: async (element) => {
+                return [{ blob: await getBlob(element.src) }];
+            }
+        });
+
+        gallery.appendChild(image);
+    }
 }

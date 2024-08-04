@@ -155,7 +155,7 @@ app.post('/getTickerImage', (req, res) => {
             console.log('MATLAB script did not finish in time. Killing the process.');
             child.kill(); // This sends SIGTERM signal
         }
-    }, 15000); // Adjust
+    }, 30000); // Adjust
 });
 
 app.post('/getTickerData', (req, res) => {
@@ -213,7 +213,7 @@ app.post("/createUser", (req, res) => {
 app.post("/populateBank", (req, res) => {
     console.log("Populating bank with: ", req.body.ticker);
 
-    // const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "run('Candlestick_Analysis.m'); exit;"`, (error, stdout, stderr) => {
+    //const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "run('Candlestick_Analysis.m'); exit;"`, (error, stdout, stderr) => {
         const child = exec(`/Applications/MATLAB_R2024a.app/bin/matlab -nodisplay -nosplash -r "Candlestick_Analysis_Polygon('${req.body.ticker}'); exit;"`, (error, stdout, stderr) => {
             if (error) {
               console.error(`Error executing MATLAB script: ${error.message}`);
@@ -282,7 +282,13 @@ app.post("/populateBank", (req, res) => {
                 console.log('MATLAB script did not finish in time. Killing the process.');
                 child.kill(); // This sends SIGTERM signal
             }
+<<<<<<< Updated upstream
         }, 15000); // Adjust
+=======
+        },50000); // Adjust
+
+    
+>>>>>>> Stashed changes
 })
 
 app.post("/addTickerToPortfolio", (req, res) => {
